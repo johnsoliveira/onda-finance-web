@@ -9,38 +9,38 @@
   --font-heading: "Instrument Sans", "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", monospace;
 
-  --color-primary: #0d9488;
-  --color-secondary: #0f172a;
+  --color-brand: #0d9488;
+  --color-ink: #0f172a;
   --color-tertiary: #231500;
   --color-neutral: #f8fafc;
 
-  --color-background: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-foreground: #0f172a;
-  --color-muted: #475569;
-  --color-border: #d9e2ec;
+  --color-app-background: #f1f5f9;
+  --color-app-surface: #ffffff;
+  --color-app-foreground: #0f172a;
+  --color-app-muted: #475569;
+  --color-app-border: #d9e2ec;
 
-  --color-primary-50: #f0fdfa;
-  --color-primary-100: #ccfbf1;
-  --color-primary-200: #99f6e4;
-  --color-primary-300: #5eead4;
-  --color-primary-400: #2dd4bf;
-  --color-primary-500: #0d9488;
-  --color-primary-600: #0f766e;
-  --color-primary-700: #115e59;
-  --color-primary-800: #134e4a;
-  --color-primary-900: #042f2e;
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #0d9488;
+  --color-brand-600: #0f766e;
+  --color-brand-700: #115e59;
+  --color-brand-800: #134e4a;
+  --color-brand-900: #042f2e;
 
-  --color-secondary-50: #f8fafc;
-  --color-secondary-100: #e2e8f0;
-  --color-secondary-200: #cbd5e1;
-  --color-secondary-300: #94a3b8;
-  --color-secondary-400: #64748b;
-  --color-secondary-500: #475569;
-  --color-secondary-600: #334155;
-  --color-secondary-700: #1e293b;
-  --color-secondary-800: #0f172a;
-  --color-secondary-900: #020617;
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #e2e8f0;
+  --color-ink-200: #cbd5e1;
+  --color-ink-300: #94a3b8;
+  --color-ink-400: #64748b;
+  --color-ink-500: #475569;
+  --color-ink-600: #334155;
+  --color-ink-700: #1e293b;
+  --color-ink-800: #0f172a;
+  --color-ink-900: #020617;
 
   --color-tertiary-50: #fff7ed;
   --color-tertiary-100: #ffedd5;
@@ -80,8 +80,8 @@
 
   html {
     min-height: 100%;
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--color-app-background);
+    color: var(--color-app-foreground);
     @apply font-sans;
   }
 
@@ -92,8 +92,8 @@
     background:
       radial-gradient(circle at top left, rgba(13, 148, 136, 0.12), transparent 32%),
       radial-gradient(circle at top right, rgba(15, 23, 42, 0.1), transparent 26%),
-      linear-gradient(180deg, #fcfdff 0%, var(--color-background) 100%);
-    color: var(--color-foreground);
+      linear-gradient(180deg, #fcfdff 0%, var(--color-app-background) 100%);
+    color: var(--color-app-foreground);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -107,11 +107,11 @@
   .dark {
     color-scheme: dark;
 
-    --color-background: #020617;
-    --color-surface: #0f172a;
-    --color-foreground: #f8fafc;
-    --color-muted: #94a3b8;
-    --color-border: #1e293b;
+    --color-app-background: #020617;
+    --color-app-surface: #0f172a;
+    --color-app-foreground: #f8fafc;
+    --color-app-muted: #94a3b8;
+    --color-app-border: #1e293b;
 
   }
 
@@ -125,7 +125,7 @@
   h4 {
     margin: 0;
     font-family: var(--font-heading);
-    color: var(--color-foreground);
+    color: var(--color-app-foreground);
   }
 
   p {
