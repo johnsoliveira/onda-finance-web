@@ -191,9 +191,6 @@ Isso cria uma base mínima para evolução com segurança.
 
 ### Prioridade média
 
-- Migrar de `react-query@3` para `@tanstack/react-query` atual.
-  Isso reduziria incompatibilidades com React 19 e simplificaria instalação sem `--legacy-peer-deps`.
-
 - Expandir a suíte de testes para:
   - máscaras em [`src/utils/mask.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/utils/mask.ts)
   - hooks de dashboard
