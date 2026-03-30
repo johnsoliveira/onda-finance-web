@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/logo.png";
 
 type SidebarItem = {
     icon: LucideIcon;
@@ -52,7 +53,7 @@ export function AppSidebar({
                     </div>
                     <div className="mt-8">
                         <div className="text-[15px] font-semibold tracking-[-0.03em] text-slate-900">
-                            Transfer Funds
+                            {brandSubtitle}
                         </div>
                         <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400">
                             {brandSubtitle}
@@ -61,8 +62,12 @@ export function AppSidebar({
                 </div>
             ) : (
                 <div className="flex h-20 items-center gap-3 px-6">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-950">
-                        <span className="text-3xl text-brand">~</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200">
+                        <img
+                            src={logo}
+                            alt="Logo Onda Finance"
+                            className="h-11 w-auto object-contain shrink-0"
+                        />
                     </div>
                     <div>
                         <div className="text-3xl font-semibold tracking-tight">{brandTitle}</div>

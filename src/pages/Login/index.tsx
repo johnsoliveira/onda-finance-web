@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthLogin } from "@/hooks/auth-login";
+import logo from "@/assets/logo.png";
 
 const loginSchema = z.object({
     agencia: z.string()
@@ -60,11 +61,20 @@ function LoginPage() {
             </div>
             <main className="relative z-10 w-full max-w-[420px]">
                 <div className="mb-8 flex flex-col items-center">
-                    <div className="mb-2 flex items-center gap-2">
-                        <span className="text-3xl text-brand">~</span>
-                        <span className="text-2xl font-bold tracking-tight text-ink">
-                            Onda Finance
-                        </span>
+                    <div className="mb-2 flex items-center gap-3">
+                        <img
+                            src={logo}
+                            alt="Logo Onda Finance"
+                            className="h-11 w-auto object-contain shrink-0"
+                        />
+                        <div className="leading-none">
+                            <span className="block text-2xl font-bold tracking-tight text-ink">
+                                Onda Finance
+                            </span>
+                            {/* <span className="mt-1 block text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-app-muted">
+                                Institutional
+                            </span> */}
+                        </div>
                     </div>
                     <p className="text-sm text-app-muted">
                         Acesse sua conta para continuar
