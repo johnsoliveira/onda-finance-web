@@ -177,12 +177,12 @@ export default function DashboardPage() {
                                                                         ? handleGoToTransfers
                                                                         : undefined
                                                             }
-                                                            disabled={updateBalanceMutation.isLoading && action.label === "Depósito"}
+                                                            disabled={updateBalanceMutation.isPending && action.label === "Depósito"}
                                                             className="flex flex-col cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 text-center hover:bg-slate-100 min-w-20 w-full h-20"
                                                         >
                                                             <Icon className="h-5 w-5 text-slate-700" />
                                                             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
-                                                                {action.label === "Depósito" && updateBalanceMutation.isLoading
+                                                                {action.label === "Depósito" && updateBalanceMutation.isPending
                                                                     ? "Processando"
                                                                     : action.label}
                                                             </span>

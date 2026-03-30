@@ -20,7 +20,7 @@ const loginSchema = z.object({
 type LoginData = z.infer<typeof loginSchema>;
 
 function LoginPage() {
-    const { mutate, isLoading } = useAuthLogin();
+    const { mutate, isPending } = useAuthLogin();
     const [showPassword, setShowPassword] = useState(false);
 
     const {
@@ -145,10 +145,10 @@ function LoginPage() {
                         </div>
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isPending}
                             className="mt-3 flex h-12 w-full items-center cursor-pointer justify-center gap-2 rounded-lg bg-linear-to-r from-[#054c40] to-[#0d9488] text-lg font-semibold text-white transition hover:opacity-95 disabled:pointer-events-none disabled:opacity-50"
                         >
-                            {isLoading ? (
+                            {isPending ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
                             ) : (
                                 <>

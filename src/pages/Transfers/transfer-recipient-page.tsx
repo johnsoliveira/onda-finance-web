@@ -217,10 +217,10 @@ export default function TransferRecipientPage() {
 
                                 <button
                                     type="submit"
-                                    disabled={updateBalanceMutation.isLoading}
+                                    disabled={updateBalanceMutation.isPending}
                                     className="h-12 cursor-pointer rounded-lg bg-gradient-to-r from-[#031916] to-[#159a92] px-6 text-sm font-semibold text-white"
                                 >
-                                    {updateBalanceMutation.isLoading ? "Processando..." : "Revisar transferência"}
+                                    {updateBalanceMutation.isPending ? "Processando..." : "Revisar transferência"}
                                 </button>
                             </div>
                         </form>
