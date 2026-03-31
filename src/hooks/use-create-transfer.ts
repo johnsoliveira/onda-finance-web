@@ -7,6 +7,8 @@ type CreateTransferInput = {
     agencia: string;
     conta: string;
     amount: number;
+    recipientAgencia: string;
+    recipientConta: string;
     transaction: Transaction;
 };
 
@@ -15,8 +17,8 @@ export function useCreateTransfer() {
     const updateUserDashboardData = useAuthStore((state) => state.updateUserDashboardData);
 
     return useMutation({
-        mutationFn: ({ agencia, conta, amount, transaction }: CreateTransferInput) =>
-            createTransfer({ agencia, conta, amount, transaction }),
+        mutationFn: ({ agencia, conta, amount, recipientAgencia, recipientConta, transaction }: CreateTransferInput) =>
+            createTransfer({ agencia, conta, amount, recipientAgencia, recipientConta, transaction }),
         onSuccess: (updatedDashboardData, variables) => {
             queryClient.setQueryData<DashboardData>(
                 ["dashboard-data", variables.agencia, variables.conta],

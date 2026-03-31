@@ -1,42 +1,19 @@
-import { CheckCircle2, Bell, Home, Share2, UserRound } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { useTransferStore } from "@/store/useTransferStore"
+import {
+    Bell,
+    CheckCircle2,
+    Home,
+    Share2,
+    UserRound,
+} from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
-import { useCreateTransfer } from "@/hooks/use-create-transfer"
+import { useTransferStore } from "@/store/useTransferStore"
 import { formatCurrency } from "@/utils/mask"
-import { useEffect, useRef } from "react"
 
 export default function TransferReceiptPage() {
     const navigate = useNavigate()
     const { user } = useAuthStore()
-    const { amount, recipient, receipt, generateReceipt, resetTransfer } = useTransferStore()
-    const createTransfer = useCreateTransfer()
-    const hasProcessed = useRef(false)
-
-    useEffect(() => {
-        if (!user || hasProcessed.current) return
-
-        hasProcessed.current = true
-
-        if (!receipt) {
-            generateReceipt()
-        }
-
-        createTransfer.mutate({
-            agencia: user.agencia,
-            conta: user.conta,
-            amount,
-            transaction: {
-                id: `TX-${Date.now()}`,
-                date: new Intl.DateTimeFormat("pt-BR").format(new Date()),
-                description: `Transferência para ${recipient.fullName}`,
-                category: "TRANSFER",
-                status: "Completed",
-                amount,
-                type: "expense",
-            },
-        })
-    }, [amount, createTransfer, generateReceipt, receipt, recipient.fullName, user])
+    const { amount, recipient, receipt, resetTransfer } = useTransferStore()
 
     if (!user) return null
 
@@ -177,7 +154,7 @@ export default function TransferReceiptPage() {
                     <div className="mt-8 grid gap-4 md:grid-cols-2">
                         <button
                             type="button"
-                            className="flex h-14 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-800"
+                            className="flex h-14 items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-base font-semibold text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <Share2 className="h-5 w-5" />
                             Compartilhar Comprovante

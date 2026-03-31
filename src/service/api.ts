@@ -18,6 +18,8 @@ type CreateTransferPayload = {
     agencia: string;
     conta: string;
     amount: number;
+    recipientAgencia: string;
+    recipientConta: string;
     transaction: Transaction;
 };
 

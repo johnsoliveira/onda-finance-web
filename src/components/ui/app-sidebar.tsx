@@ -108,7 +108,7 @@ export function AppSidebar({
                 </nav>
             </div>
 
-            <div className={cn("mt-auto", variant === "workflow" ? "border-t border-slate-200 px-3 py-8" : "p-3")}>
+            <div className={cn("mt-auto", variant === "workflow" ? "border-t border-slate-200 px-3 pt-8 pb-12" : "px-3 pt-3 pb-10")}>
                 {cta ? (
                     <Button
                         type="button"

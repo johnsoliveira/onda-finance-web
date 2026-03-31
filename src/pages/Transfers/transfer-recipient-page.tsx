@@ -1,4 +1,5 @@
-import { Bell, CircleHelp, UserRound } from "lucide-react";
+import axios from "axios";
+import { Bell, CircleHelp, Loader2, UserRound } from "lucide-react";
 import { useTransferStore } from "@/store/useTransferStore";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
@@ -6,6 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { maskCpfCnpj } from "@/utils/mask";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useCreateTransfer } from "@/hooks/use-create-transfer";
+import { toast } from "sonner";
 
 const EMPTY_BANK_VALUE = "__empty_bank__";
 
@@ -31,8 +35,27 @@ const recipientSchema = z.object({
 
 type RecipientFormData = z.infer<typeof recipientSchema>
 
+function getTransferErrorMessage(error: unknown) {
+    if (axios.isAxiosError(error)) {
+        const apiMessage =
+            typeof error.response?.data === "object" && error.response?.data !== null
+                ? (error.response.data as { message?: string }).message
+                : undefined
+
+        return apiMessage ?? error.message ?? "Não foi possível concluir a transferência."
+    }
+
+    if (error instanceof Error) {
+        return error.message
+    }
+
+    return "Não foi possível concluir a transferência."
+}
+
 export default function TransferRecipientPage() {
-    const { recipient, setRecipient, setStep, amount } = useTransferStore()
+    const { user } = useAuthStore()
+    const { recipient, setRecipient, setStep, amount, generateReceipt } = useTransferStore()
+    const createTransfer = useCreateTransfer()
 
     const {
         register,
@@ -50,10 +73,45 @@ export default function TransferRecipientPage() {
         },
     })
 
-
     function onSubmit(data: RecipientFormData) {
         setRecipient(data)
-        setStep("confirmation")
+
+        if (!user) {
+            toast.error("Erro ao processar a transferência", {
+                description: "Sessão inválida. Faça login novamente para continuar.",
+            })
+            return
+        }
+
+        createTransfer.mutate(
+            {
+                agencia: user.agencia,
+                conta: user.conta,
+                recipientAgencia: data.agencia,
+                recipientConta: data.conta,
+                amount,
+                transaction: {
+                    id: `TX-${Date.now()}`,
+                    date: new Intl.DateTimeFormat("pt-BR").format(new Date()),
+                    description: `Transferência para ${data.fullName}`,
+                    category: "TRANSFERENCIA",
+                    status: "Completed",
+                    amount,
+                    type: "expense",
+                },
+            },
+            {
+                onSuccess: () => {
+                    generateReceipt()
+                    setStep("confirmation")
+                },
+                onError: (error) => {
+                    toast.error("Erro ao processar a transferência", {
+                        description: getTransferErrorMessage(error),
+                    })
+                },
+            }
+        )
     }
 
     return (
@@ -189,6 +247,7 @@ export default function TransferRecipientPage() {
                                 <button
                                     type="button"
                                     onClick={() => setStep("value")}
+                                    disabled={createTransfer.isPending}
                                     className="text-sm cursor-pointer font-medium text-slate-500 hover:text-slate-900"
                                 >
                                     Voltar
@@ -196,9 +255,17 @@ export default function TransferRecipientPage() {
 
                                 <button
                                     type="submit"
-                                    className="h-12 cursor-pointer rounded-lg bg-gradient-to-r from-[#031916] to-[#159a92] px-6 text-sm font-semibold text-white"
+                                    disabled={createTransfer.isPending}
+                                    className="flex h-12 cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-[#031916] to-[#159a92] px-6 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                    Revisar transferência
+                                    {createTransfer.isPending ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Estamos fazendo a transferência
+                                        </>
+                                    ) : (
+                                        "Revisar transferência"
+                                    )}
                                 </button>
                             </div>
                         </form>
