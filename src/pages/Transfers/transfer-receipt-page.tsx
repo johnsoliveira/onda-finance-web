@@ -2,7 +2,7 @@ import { CheckCircle2, Bell, Home, Share2, UserRound } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useTransferStore } from "@/store/useTransferStore"
 import { useAuthStore } from "@/store/useAuthStore"
-import { useUpdateDashboardBalance } from "@/hooks/use-update-dashboard-balance"
+import { useCreateTransfer } from "@/hooks/use-create-transfer"
 import { formatCurrency } from "@/utils/mask"
 import { useEffect, useRef } from "react"
 
@@ -10,7 +10,7 @@ export default function TransferReceiptPage() {
     const navigate = useNavigate()
     const { user } = useAuthStore()
     const { amount, recipient, receipt, generateReceipt, resetTransfer } = useTransferStore()
-    const updateBalance = useUpdateDashboardBalance()
+    const createTransfer = useCreateTransfer()
     const hasProcessed = useRef(false)
 
     useEffect(() => {
@@ -22,10 +22,10 @@ export default function TransferReceiptPage() {
             generateReceipt()
         }
 
-        updateBalance.mutate({
+        createTransfer.mutate({
             agencia: user.agencia,
             conta: user.conta,
-            amount: -amount,
+            amount,
             transaction: {
                 id: `TX-${Date.now()}`,
                 date: new Intl.DateTimeFormat("pt-BR").format(new Date()),
@@ -36,7 +36,7 @@ export default function TransferReceiptPage() {
                 type: "expense",
             },
         })
-    }, [amount, generateReceipt, receipt, recipient.fullName, updateBalance, user])
+    }, [amount, createTransfer, generateReceipt, receipt, recipient.fullName, user])
 
     if (!user) return null
 

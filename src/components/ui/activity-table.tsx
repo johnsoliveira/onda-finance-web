@@ -130,7 +130,7 @@ export function ActivityTable({
                     </span>
 
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={handlePrevious} disabled={page === 1}>
+                        <button type="button" onClick={handlePrevious} disabled={page === 1} className="cursor-pointer">
                             Anterior
                         </button>
 
@@ -138,14 +138,14 @@ export function ActivityTable({
                             {page} / {totalPages}
                         </span>
 
-                        <button
+                        {page === totalPages ? null : (<button
                             type="button"
                             onClick={handleNext}
                             disabled={page === totalPages}
-                            className="font-medium text-emerald-600"
+                            className="font-medium text-emerald-600 cursor-pointer"
                         >
                             Próxima
-                        </button>
+                        </button>)}
                     </div>
                 </div>
             )}

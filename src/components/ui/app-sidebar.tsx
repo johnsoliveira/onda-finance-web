@@ -89,7 +89,7 @@ export function AppSidebar({
                                 type="button"
                                 onClick={item.onClick}
                                 className={cn(
-                                    "flex w-full items-center gap-3 rounded-lg px-4 text-sm font-medium transition",
+                                    "flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 text-sm font-medium transition",
                                     variant === "workflow" ? "h-11" : "py-3",
                                     item.active
                                         ? variant === "workflow"

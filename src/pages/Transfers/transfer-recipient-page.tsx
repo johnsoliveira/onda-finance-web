@@ -5,8 +5,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUpdateDashboardBalance } from "@/hooks/use-update-dashboard-balance";
-import { useAuthStore } from "@/store/useAuthStore";
 import { maskCpfCnpj } from "@/utils/mask";
 
 const EMPTY_BANK_VALUE = "__empty_bank__";
@@ -35,8 +33,6 @@ type RecipientFormData = z.infer<typeof recipientSchema>
 
 export default function TransferRecipientPage() {
     const { recipient, setRecipient, setStep, amount } = useTransferStore()
-    const { user } = useAuthStore();
-    const updateBalanceMutation = useUpdateDashboardBalance()
 
     const {
         register,
@@ -57,24 +53,7 @@ export default function TransferRecipientPage() {
 
     function onSubmit(data: RecipientFormData) {
         setRecipient(data)
-        updateBalanceMutation.mutate({
-            agencia: user?.agencia ?? "",
-            conta: user?.conta ?? "",
-            amount: -amount,
-            transaction: {
-                id: `TX-${Date.now()}`,
-                date: new Intl.DateTimeFormat("pt-BR").format(new Date()),
-                description: `Transferência para ${data.fullName}`,
-                category: "TRANSFER",
-                status: "Completed",
-                amount,
-                type: "expense",
-            }
-        }, {
-            onSuccess: () => {
-                setStep("confirmation")
-            }
-        })
+        setStep("confirmation")
     }
 
     return (
@@ -217,10 +196,9 @@ export default function TransferRecipientPage() {
 
                                 <button
                                     type="submit"
-                                    disabled={updateBalanceMutation.isPending}
                                     className="h-12 cursor-pointer rounded-lg bg-gradient-to-r from-[#031916] to-[#159a92] px-6 text-sm font-semibold text-white"
                                 >
-                                    {updateBalanceMutation.isPending ? "Processando..." : "Revisar transferência"}
+                                    Revisar transferência
                                 </button>
                             </div>
                         </form>

@@ -1,13 +1,16 @@
 # Onda Finance Web
 
-Aplicação frontend construída com React, Vite e TypeScript para simular uma experiência institucional de login, dashboard financeiro e fluxo de transferências.
+Aplicação construída com React, Vite e TypeScript para simular uma experiência institucional de login, dashboard financeiro e fluxo de transferências.
+
+Além do frontend, o projeto agora conta com uma mini API local em Node.js com SQLite para autenticação, leitura do dashboard e persistência de transferências.
 
 O projeto hoje contempla:
 - login com validação de formulário
-- dashboard com dados mockados por usuário
+- dashboard com dados persistidos em SQLite
 - fluxo de transferências em múltiplas etapas
 - persistência local com Zustand
 - atualização de saldo via React Query
+- mini API local com seed a partir dos mocks originais
 - setup inicial de testes com Vitest
 
 ## Como rodar o projeto
@@ -31,15 +34,46 @@ npm install --legacy-peer-deps
 
 ### Ambiente de desenvolvimento
 
+Para subir frontend e API juntos:
+
 ```bash
+npm run dev:full
+```
+
+Esse comando sobe:
+- Vite em `http://localhost:5173`
+- mini API em `http://localhost:3001`
+
+Se preferir rodar separado:
+
+```bash
+npm run api
 npm run dev
 ```
 
-O app sobe via Vite e, no estado atual, expõe principalmente estas rotas:
+Check rápido da API:
+
+```bash
+curl http://localhost:3001/api/health
+```
+
+Se a resposta for `{"status":"ok"}`, o proxy do Vite também estará apto a responder chamadas como:
+
+```bash
+curl "http://localhost:5173/api/dashboard?agencia=0001&conta=12345"
+```
+
+O app expõe principalmente estas rotas:
 
 - `/` ou `/login`: tela de login
 - `/dashboard`: dashboard do usuário autenticado
 - `/transfers`: fluxo de transferência
+
+### Banco SQLite
+
+- O banco fica em `server/data/onda.sqlite`
+- Na primeira inicialização da API, o banco é criado automaticamente
+- O seed inicial usa os dados definidos em [server/mock-users.mjs](/Users/jonatanoliveira/Projects/onda-finance-web/server/mock-users.mjs)
 
 ### Build de produção
 
@@ -65,9 +99,9 @@ Modo watch:
 npm run test:watch
 ```
 
-## Credenciais mockadas
+## Credenciais iniciais
 
-O projeto usa dados locais em [`src/data/mockUsers.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/data/mockUsers.ts). Exemplos atuais:
+O projeto usa como seed inicial os dados de [server/mock-users.mjs](/Users/jonatanoliveira/Projects/onda-finance-web/server/mock-users.mjs). Exemplos atuais:
 
 - Agência `0001`, Conta `12345`, Senha `admin1`
 - Agência `1111`, Conta `22222`, Senha `joao12`
@@ -82,9 +116,15 @@ src/
   hooks/              hooks de autenticação e dados
   pages/              páginas de Login, Dashboard e Transfers
   routes/             definição de rotas com react-router-dom
+  service/            cliente HTTP da aplicação
   store/              stores persistidos com Zustand
   test/               setup global do Vitest
   utils/              máscaras e formatadores
+server/
+  data/               arquivo SQLite gerado em runtime
+  db.mjs              acesso e seed do banco SQLite
+  index.mjs           mini API HTTP local
+  mock-users.mjs      seed inicial do banco
 ```
 
 ## Decisões técnicas adotadas
@@ -122,9 +162,11 @@ O uso de `persist` foi uma escolha intencional para:
 - preservar o progresso do fluxo de transferência
 - facilitar prototipação sem backend real
 
-### 5. React Query para leitura e mutação de dados simulados
+### 5. React Query + mini API local
 
-Mesmo usando mocks locais, o projeto já trata esses dados como se viessem de uma API:
+O frontend consome a API local por meio de [src/service/api.ts](/Users/jonatanoliveira/Projects/onda-finance-web/src/service/api.ts), enquanto o Vite faz proxy de `/api` para `http://localhost:3001`.
+
+Hoje os principais fluxos passam por:
 
 - [`src/hooks/use-dashboard-data.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/hooks/use-dashboard-data.ts)
   Busca os dados de dashboard por agência e conta.
@@ -132,17 +174,20 @@ Mesmo usando mocks locais, o projeto já trata esses dados como se viessem de um
 - [`src/hooks/use-update-dashboard-balance.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/hooks/use-update-dashboard-balance.ts)
   Atualiza saldo, liquidez e transações no cache do dashboard.
 
-Essa decisão prepara o código para uma futura troca dos mocks por API real com pouco impacto na UI.
+- [`src/hooks/use-create-transfer.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/hooks/use-create-transfer.ts)
+  Executa a transferência persistindo os dados no SQLite.
 
-### 6. Mock por usuário em vez de mock global único
+Essa estrutura deixa o projeto mais próximo de um backend real sem complicar demais o setup local.
 
-Os dados em [`src/data/mockUsers.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/data/mockUsers.ts) foram organizados por usuário, incluindo:
+### 6. SQLite com seed por usuário
+
+Os dados seedados foram organizados por usuário, incluindo:
 - documento
 - nome do banco
 - saldo e métricas do dashboard
 - transações específicas por cliente
 
-Isso melhora a fidelidade da navegação entre contas e evita uma UI “genérica”.
+Isso melhora a fidelidade da navegação entre contas e permite persistir alterações reais durante a sessão.
 
 ### 7. React Hook Form + Zod para validação
 
@@ -178,16 +223,13 @@ Isso cria uma base mínima para evolução com segurança.
 
 ### Prioridade alta
 
-- Corrigir o fluxo de débito da transferência para garantir que o saldo seja atualizado uma única vez.
-  Hoje há sinal de débito no submit do destinatário e também no comprovante, o que indica risco de dupla atualização.
-
 - Finalizar a integração do `Select` com `react-hook-form` de forma totalmente controlada e consistente em toda a tela de destinatário.
 
 - Adicionar proteção de rotas mais robusta.
   Hoje o redirecionamento depende das páginas verificarem `user` localmente.
 
-- Separar melhor a camada de mock da camada de serviço.
-  Idealmente, `mockUsers` deveria alimentar um serviço/repositório, e não ser acessado diretamente por vários hooks.
+- Melhorar a autenticação.
+  Hoje a API valida agência, conta e senha em texto puro, suficiente para ambiente local, mas não para produção.
 
 ### Prioridade média
 
@@ -215,18 +257,20 @@ Isso cria uma base mínima para evolução com segurança.
 - Implementar code splitting por rota.
   O build já mostra warning de chunk grande, então esse é um bom próximo passo técnico.
 
-- Evoluir o README com prints, fluxos e decisões de produto.
+- Evoluir a mini API com camadas separadas para rotas, serviços e repositórios.
 
 ## Observações sobre o estado atual
 
 - O projeto está funcional para prototipação e demonstração de fluxo.
 - A base de UI e estado já está estruturada para crescer.
-- Há pontos de refinamento importantes antes de considerar ambiente produtivo, especialmente no fluxo de transferência e na camada de dados.
+- Há pontos de refinamento importantes antes de considerar ambiente produtivo, especialmente em autenticação, segurança e estrutura do backend.
 
 ## Comandos úteis
 
 ```bash
+npm run api
 npm run dev
+npm run dev:full
 npm run build
 npm run preview
 npm run test

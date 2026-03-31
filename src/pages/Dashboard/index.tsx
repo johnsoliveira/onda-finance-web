@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeftRight, Bell, CreditCard, HelpCircle, InfoIcon, Landmark, LayoutGrid, LineChart, LogOut, PiggyBank, Play, QrCode, Receipt, Search, Settings, TrendingUp } from "lucide-react";
 import { AppSidebar } from "@/components/ui/app-sidebar";
-import { formatUSD, maskCurrency } from "@/utils/mask";
+import { formatCurrency, formatUSD } from "@/utils/mask";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Navigate, useNavigate } from "react-router-dom";
 import { ActivityTable } from "@/components/ui/activity-table";
@@ -58,7 +58,7 @@ export default function DashboardPage() {
         sub: `ID: #${transaction.id}`,
         category: transaction.category,
         status: transaction.status,
-        amount: `${transaction.type === "income" ? "+" : "-"}${maskCurrency(transaction.amount.toString())}`,
+        amount: `${transaction.type === "income" ? "+" : "-"}${formatCurrency(transaction.amount)}`,
         positive: transaction.type === "income" ? true : false,
     }))
 
@@ -140,7 +140,7 @@ export default function DashboardPage() {
                                                 </div>
                                                 <div className="flex items-end gap-3">
                                                     <div className="text-5xl font-semibold tracking-tight">
-                                                        {maskCurrency(currentDashboardData.totalBalance.toString())}
+                                                        {formatCurrency(currentDashboardData.totalBalance)}
                                                     </div>
                                                     <Badge className="rounded-md bg-emerald-100 text-emerald-600 hover:bg-emerald-100">
                                                         +2.4%
@@ -152,7 +152,7 @@ export default function DashboardPage() {
                                                         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
                                                             Limite Disponível
                                                         </div>
-                                                        <div className="mt-1 font-semibold">{maskCurrency(currentDashboardData.availableLimit.toString())}</div>
+                                                        <div className="mt-1 font-semibold">{formatCurrency(currentDashboardData.availableLimit)}</div>
                                                     </div>
                                                     <div>
                                                         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
@@ -268,7 +268,7 @@ export default function DashboardPage() {
                                                     Liquidez / Poupança
                                                 </div>
                                                 <div className="mt-2 text-4xl font-semibold tracking-tight">
-                                                    {maskCurrency(currentDashboardData.liquidity.toString())}
+                                                    {formatCurrency(currentDashboardData.liquidity)}
                                                 </div>
                                             </div>
                                             <div className="rounded-lg bg-slate-50 p-3">
