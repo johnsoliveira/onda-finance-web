@@ -5,7 +5,9 @@ import type { DashboardData, User } from "@/types";
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
+    hasHydrated: boolean;
     setUser: (user: User | null) => void;
+    setHasHydrated: (hasHydrated: boolean) => void;
     updateUserDashboardData: (dashboardData: DashboardData) => void;
     logout: () => void;
 }
@@ -15,7 +17,9 @@ export const useAuthStore = create<AuthState>()(
         (set) => ({
             user: null,
             isAuthenticated: false,
+            hasHydrated: false,
             setUser: (user) => set({ user, isAuthenticated: !!user }),
+            setHasHydrated: (hasHydrated) => set({ hasHydrated }),
             updateUserDashboardData: (dashboardData) =>
                 set((state) => ({
                     user: state.user
@@ -29,6 +33,9 @@ export const useAuthStore = create<AuthState>()(
         }),
         {
             name: "onda-finance-auth",
+            onRehydrateStorage: () => (state) => {
+                state?.setHasHydrated(true);
+            },
         }
     )
 );

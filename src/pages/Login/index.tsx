@@ -4,6 +4,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthLogin } from "@/hooks/auth-login";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Navigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const loginSchema = z.object({
@@ -23,6 +25,15 @@ type LoginData = z.infer<typeof loginSchema>;
 function LoginPage() {
     const { mutate, isPending } = useAuthLogin();
     const [showPassword, setShowPassword] = useState(false);
+    const { user, hasHydrated } = useAuthStore();
+
+    if (!hasHydrated) {
+        return null;
+    }
+
+    if (user) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const {
         register,

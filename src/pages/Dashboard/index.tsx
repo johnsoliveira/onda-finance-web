@@ -15,7 +15,11 @@ import { useUpdateDashboardBalance } from "@/hooks/use-update-dashboard-balance"
 
 export default function DashboardPage() {
     const navigate = useNavigate();
-    const { user, logout } = useAuthStore();
+    const { user, logout, hasHydrated } = useAuthStore();
+
+    if (!hasHydrated) {
+        return null;
+    }
 
     if (!user) {
         return <Navigate to="/" replace />;

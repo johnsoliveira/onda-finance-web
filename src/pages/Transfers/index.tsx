@@ -9,8 +9,12 @@ import TransferReceiptPage from "./transfer-receipt-page"
 
 export default function TransfersPage() {
     const navigate = useNavigate()
-    const { user, logout } = useAuthStore()
+    const { user, logout, hasHydrated } = useAuthStore()
     const { step, resetTransfer } = useTransferStore();
+
+    if (!hasHydrated) {
+        return null
+    }
 
     if (!user) {
         return <Navigate to="/" replace />
