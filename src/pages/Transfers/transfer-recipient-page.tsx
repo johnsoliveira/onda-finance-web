@@ -134,7 +134,7 @@ export default function TransferRecipientPage() {
                                                 }}
                                             >
                                                 <SelectTrigger
-                                                    className={`h-14 w-full rounded-lg border bg-slate-100 px-4 outline-none ${errors.bankName ? "border-red-500" : "border-transparent"
+                                                    className={`h-12 w-full rounded-lg border bg-slate-100 px-4 outline-none ${errors.bankName ? "border-red-500" : "border-transparent"
                                                         }`}
                                                 >
                                                     <SelectValue placeholder="Selecione um banco" />
