@@ -2,15 +2,14 @@
 
 Aplicação construída com React, Vite e TypeScript para simular uma experiência institucional de login, dashboard financeiro e fluxo de transferências.
 
-Além do frontend, o projeto agora conta com uma mini API local em Node.js com SQLite para autenticação, leitura do dashboard e persistência de transferências.
+O frontend consome uma API separada via variável de ambiente.
 
 O projeto hoje contempla:
 - login com validação de formulário
-- dashboard com dados persistidos em SQLite
+- dashboard com dados vindos de API externa
 - fluxo de transferências em múltiplas etapas
 - persistência local com Zustand
 - atualização de saldo via React Query
-- mini API local com seed a partir dos mocks originais
 - setup inicial de testes com Vitest
 
 ## Como rodar o projeto
@@ -34,34 +33,11 @@ npm install --legacy-peer-deps
 
 ### Ambiente de desenvolvimento
 
-Para subir frontend e API juntos:
-
 ```bash
-npm run dev:full
-```
-
-Esse comando sobe:
-- Vite em `http://localhost:5173`
-- mini API em `http://localhost:3001`
-
-Se preferir rodar separado:
-
-```bash
-npm run api
 npm run dev
 ```
 
-Check rápido da API:
-
-```bash
-curl http://localhost:3001/api/health
-```
-
-Se a resposta for `{"status":"ok"}`, o proxy do Vite também estará apto a responder chamadas como:
-
-```bash
-curl "http://localhost:5173/api/dashboard?agencia=0001&conta=12345"
-```
+O frontend usa `VITE_API_BASE_URL` para apontar para a API externa.
 
 O app expõe principalmente estas rotas:
 
@@ -69,11 +45,10 @@ O app expõe principalmente estas rotas:
 - `/dashboard`: dashboard do usuário autenticado
 - `/transfers`: fluxo de transferência
 
-### Banco SQLite
+### Variável da API
 
-- O banco fica em `server/data/onda.sqlite`
-- Na primeira inicialização da API, o banco é criado automaticamente
-- O seed inicial usa os dados definidos em [server/mock-users.mjs](/Users/jonatanoliveira/Projects/onda-finance-web/server/mock-users.mjs)
+- Arquivo local: [.env](/Users/jonatanoliveira/Projects/onda-finance-web/.env)
+- Chave usada: `VITE_API_BASE_URL`
 
 ### Build de produção
 
@@ -101,7 +76,7 @@ npm run test:watch
 
 ## Credenciais iniciais
 
-O projeto usa como seed inicial os dados de [server/mock-users.mjs](/Users/jonatanoliveira/Projects/onda-finance-web/server/mock-users.mjs). Exemplos atuais:
+As credenciais dependem da API configurada em `VITE_API_BASE_URL`. Exemplos esperados:
 
 - Agência `0001`, Conta `12345`, Senha `admin1`
 - Agência `1111`, Conta `22222`, Senha `joao12`
@@ -120,11 +95,6 @@ src/
   store/              stores persistidos com Zustand
   test/               setup global do Vitest
   utils/              máscaras e formatadores
-server/
-  data/               arquivo SQLite gerado em runtime
-  db.mjs              acesso e seed do banco SQLite
-  index.mjs           mini API HTTP local
-  mock-users.mjs      seed inicial do banco
 ```
 
 ## Decisões técnicas adotadas
@@ -162,9 +132,9 @@ O uso de `persist` foi uma escolha intencional para:
 - preservar o progresso do fluxo de transferência
 - facilitar prototipação sem backend real
 
-### 5. React Query + mini API local
+### 5. React Query + API externa
 
-O frontend consome a API local por meio de [src/service/api.ts](/Users/jonatanoliveira/Projects/onda-finance-web/src/service/api.ts), enquanto o Vite faz proxy de `/api` para `http://localhost:3001`.
+O frontend consome a API por meio de [src/service/api.ts](/Users/jonatanoliveira/Projects/onda-finance-web/src/service/api.ts), usando `VITE_API_BASE_URL`.
 
 Hoje os principais fluxos passam por:
 
@@ -175,19 +145,19 @@ Hoje os principais fluxos passam por:
   Atualiza saldo, liquidez e transações no cache do dashboard.
 
 - [`src/hooks/use-create-transfer.ts`](/Users/jonatanoliveira/Projects/onda-finance-web/src/hooks/use-create-transfer.ts)
-  Executa a transferência persistindo os dados no SQLite.
+  Executa a transferência na API.
 
-Essa estrutura deixa o projeto mais próximo de um backend real sem complicar demais o setup local.
+Essa estrutura mantém o frontend desacoplado do backend.
 
-### 6. SQLite com seed por usuário
+### 6. Dados por usuário
 
-Os dados seedados foram organizados por usuário, incluindo:
+Os dados retornados pela API incluem por usuário:
 - documento
 - nome do banco
 - saldo e métricas do dashboard
 - transações específicas por cliente
 
-Isso melhora a fidelidade da navegação entre contas e permite persistir alterações reais durante a sessão.
+Isso melhora a fidelidade da navegação entre contas.
 
 ### 7. React Hook Form + Zod para validação
 
@@ -229,7 +199,7 @@ Isso cria uma base mínima para evolução com segurança.
   Hoje o redirecionamento depende das páginas verificarem `user` localmente.
 
 - Melhorar a autenticação.
-  Hoje a API valida agência, conta e senha em texto puro, suficiente para ambiente local, mas não para produção.
+  Hoje o frontend depende da API externa para validar agência, conta e senha.
 
 ### Prioridade média
 
@@ -257,20 +227,18 @@ Isso cria uma base mínima para evolução com segurança.
 - Implementar code splitting por rota.
   O build já mostra warning de chunk grande, então esse é um bom próximo passo técnico.
 
-- Evoluir a mini API com camadas separadas para rotas, serviços e repositórios.
+- Evoluir a integração com a API com tratamento de erro e observabilidade.
 
 ## Observações sobre o estado atual
 
 - O projeto está funcional para prototipação e demonstração de fluxo.
 - A base de UI e estado já está estruturada para crescer.
-- Há pontos de refinamento importantes antes de considerar ambiente produtivo, especialmente em autenticação, segurança e estrutura do backend.
+- Há pontos de refinamento importantes antes de considerar ambiente produtivo, especialmente em autenticação e segurança.
 
 ## Comandos úteis
 
 ```bash
-npm run api
 npm run dev
-npm run dev:full
 npm run build
 npm run preview
 npm run test
